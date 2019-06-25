@@ -72,6 +72,7 @@ t.start()
 class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
     # GET
     def do_GET(self):
+        global T,a,w,angle
         self.send_response(200)
         self.send_header('Content-type','http')
         self.send_header('Access-Control-Allow-Origin','*')

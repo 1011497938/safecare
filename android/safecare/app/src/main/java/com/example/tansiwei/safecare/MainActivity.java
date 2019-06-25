@@ -19,7 +19,8 @@ import android.webkit.WebViewClient;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String url = "http://songciclient.vps.lppy.site:6060";
+    private String url = "http://192.168.43.83:3000"
+    //"http://songciclient.vps.lppy.site:6060";
     private WebView webView;
     private ProgressDialog dialog;
 

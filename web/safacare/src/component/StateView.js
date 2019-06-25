@@ -22,9 +22,13 @@ export default class StateView extends React.Component{
     }
 
     isQuetA(a){
+        // console.log(data.w, this.getTotalA(data.w))
         const ratio = this.getTotalA(a)/this.getTotalA(dataStore.start_a)
         return ratio<1.05 && ratio>0.95
     }
+
+
+
     detectWake(device_data){
         const {mode} = this.state
         const num = device_data.length
@@ -32,7 +36,7 @@ export default class StateView extends React.Component{
             return
         const last_time = device_data[num-1].time
         device_data = device_data.filter(elm=> {
-            return last_time-elm.time<3000 //&& !
+            return last_time-elm.time<8000 //&& !
         })   //现在取得10秒
         let move_num = 0
         device_data.forEach(elm=>{
@@ -72,7 +76,7 @@ export default class StateView extends React.Component{
         }
         let cewo_po = 0
         device_data.forEach(elm => {
-            if(cos_dist(elm.a, start_a)>0.2){
+            if(cos_dist(elm.a, start_a)>0.15){
                 cewo_po++
             }
         });
@@ -91,7 +95,29 @@ export default class StateView extends React.Component{
                 this.setState({mode: '仰卧'})
         }
     }
+
+
     componentDidMount(){
+        const component = this
+        document.onkeydown=function(event){ 
+            var keyNum = window.event ? event.keyCode :event.which; 
+            // 37,38,39
+            let {mode} = component.state
+            if(keyNum===37){
+                mode = mode==='侧卧'?'仰卧':'侧卧'
+                if(mode==='侧卧')
+                    stateManager.notify_cewo.set(!stateManager.notify_cewo.get())
+                component.setState({mode: mode})
+            }else if(keyNum===39){
+                mode = mode==='醒'?'仰卧':'醒'
+                if(mode==='醒')
+                    stateManager.notify_wake.set(!stateManager.notify_wake.get())
+                component.setState({mode: mode})
+            }
+            // if( event.ctrlKey && keyNum == 13){  
+            //     console.log("你按下了Ctrl + Enter")
+            // } 
+        };
         this.drawQuantityMotion()
         this.onDeviceDataChange = autorun(()=>{
             let device_data = dataStore.device_data.slice()
@@ -155,16 +181,19 @@ export default class StateView extends React.Component{
             '侧卧': ceshui_icon,
             '仰卧': yangwo_icon
         }
+        // console.log(mode)
         return (
         <div style={{width: '100%', height: '100%'}}>
             <div style={{top: 200, width: width, height: 50, position: 'absolute'}}>
                 <div style={{textAlign: 'right', top: 0, position: 'absolute', right: '15%', fontSize: 20, color: main_color, fontWeight: 'bold'}}>
-                    {is_wake?  '醒了': '睡着了'}
+                    {is_wake?  '醒了':  mode}
                     <div style={{textAlign: 'right', right: 0,top: 40, width: 200,position: 'absolute', fontSize: 15, color: 'black', fontWeight: 200}}>
                         {Math.floor(time/60) + '小时' + time%60 + '分钟'}
                     </div>
                 </div>
-                <img src={mode2png[mode]} style={{width: '32%', left: '13%', top: '-70px',position:'absolute'}} alt=''/>
+                <img src={xingle_icon} style={{display: mode==='醒'?'block':'none',width: '32%', left: '13%', top: '-70px',position:'absolute'}} alt=''/>
+                <img src={ceshui_icon} style={{display: mode==='侧卧'?'block':'none',width: '32%', left: '13%', top: '-70px',position:'absolute'}} alt=''/>
+                <img src={yangwo_icon} style={{display: mode==='仰卧'?'block':'none',width: '32%', left: '13%', top: '-70px',position:'absolute'}} alt=''/>
             </div>
             <div style={{bottom: height/5, width: '100%', height: 50, position: 'absolute'}}>
                 <div style={{textAlign: 'right', right: '15%',top: -50, width: 200,position: 'absolute', fontSize: 10, color: 'black', fontWeight: 200}}>

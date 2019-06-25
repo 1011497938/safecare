@@ -31,12 +31,13 @@ var dataStore = {
         device_data = device_data.sort((a,b)=> a.time-b.time)
         // console.log(device_data)
         dataStore.device_data.replace(device_data)
+        // console.log(getTotalA(data.w), data.w)
         // console.log(getTotalA(a)-getTotalA(dataStore.start_a))
         // console.log(isQuetA(a),getTotalA(a)/getTotalA(dataStore.start_a))
     }),
     dataExchange: ()=>{
         setInterval(()=>{
-            fetch('http://localhost:8000/',{
+            fetch('http://localhost:8000',{  //http://songciserver.vps.lppy.site:6060/  //http://192.168.43.83:8000/  //http://localhost:8000/
                 method:'GET',
                 headers:{
                     'Accept': 'application/json, text/plain, */*',
@@ -51,7 +52,7 @@ var dataStore = {
                 dataStore.updateDeviceData(data)
             })
             .catch(e => console.log('错误:', e))
-        }, 50)
+        }, 100)
     },
 }
 dataStore.dataExchange()
